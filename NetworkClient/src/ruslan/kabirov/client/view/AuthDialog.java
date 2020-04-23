@@ -49,4 +49,7 @@ public class AuthDialog extends JFrame {
         System.exit(0);
     }
 
+    public void showError(String errorMessage) {
+        JOptionPane.showMessageDialog(this, errorMessage);
+    }
 }

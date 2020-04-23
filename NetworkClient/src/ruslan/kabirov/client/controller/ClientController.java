@@ -1,14 +1,17 @@
 package ruslan.kabirov.client.controller;
 
+import ruslan.kabirov.Command;
 import ruslan.kabirov.client.model.NetworkService;
 import ruslan.kabirov.client.view.AuthDialog;
 import ruslan.kabirov.client.view.ClientChat;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.List;
 
 public class ClientController {
 
+    private static final String ALL_USERS_LIST_ITEM = "All";
     private final NetworkService networkService;
     private final AuthDialog authDialog;
     private final ClientChat clientChat;
@@ -55,19 +58,31 @@ public class ClientController {
     }
 
     public void sendAuthMessage(String login, String pass) throws IOException {
-        networkService.sendAuthMessage(login, pass);
+        sendCommand(Command.authCommand(login, pass));
     }
 
     public void sendMessage(String message) {
+        sendCommand(Command.broadcastMessageCommand(message));
+    }
+
+    public void sendPrivateMessage(String username, String message) {
+        sendCommand(Command.privateMessageCommand(username, message));
+    }
+
+    public void sendCommand(Command command) {
         try {
-            networkService.sendMessage(message);
+            networkService.sendCommand(command);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Failed to send message!");
-            e.printStackTrace();
+            showErrorMessage(e.getMessage());
         }
     }
 
     public void shutdown() {
+        if (authDialog.isActive()) {
+            authDialog.setVisible(false);
+            authDialog.dispose();
+            System.exit(0);
+        }
         networkService.close();
     }
 
@@ -75,7 +90,18 @@ public class ClientController {
         return nickname;
     }
 
-    public void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(authDialog, message);
+    public void showErrorMessage(String errorMessage) {
+        if (clientChat.isActive()) {
+            clientChat.showError(errorMessage);
+        } else if (authDialog.isActive()) {
+            authDialog.showError(errorMessage);
+        }
+        System.err.println(errorMessage);
+    }
+
+    public void updateUsersList(List<String> users) {
+        users.remove(nickname);
+        users.add(0, ALL_USERS_LIST_ITEM);
+        clientChat.updateUsers(users);
     }
 }
