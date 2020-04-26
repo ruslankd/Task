@@ -64,8 +64,11 @@ public class NetworkService {
                 processMessageCommand(command);
                 break;
             case AUTH_ERROR:
-                controller.showErrorMessage(((ErrorCommand) command.getData()).getErrorMessage());
-                controller.shutdown();
+                String errorMessage = ((ErrorCommand) command.getData()).getErrorMessage();
+                controller.showErrorMessage(errorMessage);
+                if (errorMessage.equals("Authorization timed out")) {
+                    controller.shutdown();
+                }
                 break;
             case ERROR:
                 processErrorCommand(command);
