@@ -14,7 +14,7 @@ import static ruslan.kabirov.server.networkserver.MessageConstant.*;
 
 public class ClientHandler {
 
-    private static final int TIME_FOR_AUTHORIZATION = 10000;
+    private static final int TIME_FOR_AUTHORIZATION = 120000;
     private final MyServer serverInstance;
     private final AuthService authService;
     private final Socket clientSocket;
@@ -162,9 +162,5 @@ public class ClientHandler {
 
     public void sendMessage(Command command) throws IOException {
         outputStream.writeObject(command);
-    }
-
-    public void sendTargetMessage(String nicknameFrom, String message) throws IOException {
-        outputStream.writeUTF("from_" + nicknameFrom + "_to_" + this.nickname + ": " + message);
     }
 }

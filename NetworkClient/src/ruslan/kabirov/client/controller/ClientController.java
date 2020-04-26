@@ -78,7 +78,7 @@ public class ClientController {
     }
 
     public void shutdown() {
-        if (authDialog.isActive()) {
+        if (authDialog.isEnabled()) {
             authDialog.setVisible(false);
             authDialog.dispose();
             System.exit(0);
@@ -91,9 +91,9 @@ public class ClientController {
     }
 
     public void showErrorMessage(String errorMessage) {
-        if (clientChat.isActive()) {
+        if (clientChat.isEnabled()) {
             clientChat.showError(errorMessage);
-        } else if (authDialog.isActive()) {
+        } else if (authDialog.isEnabled()) {
             authDialog.showError(errorMessage);
         }
         System.err.println(errorMessage);
