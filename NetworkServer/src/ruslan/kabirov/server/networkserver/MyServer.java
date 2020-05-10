@@ -1,6 +1,7 @@
 package ruslan.kabirov.server.networkserver;
 
 
+import ruslan.kabirov.Command;
 import ruslan.kabirov.server.networkserver.auth.AuthService;
 import ruslan.kabirov.server.networkserver.auth.BaseAuthService;
 import ruslan.kabirov.server.networkserver.clienthandler.ClientHandler;
@@ -64,24 +65,36 @@ public class MyServer {
         return false;
     }
 
-    public synchronized void broadcastMessage(String message) throws IOException {
+    public synchronized void broadcastMessage(Command command) throws IOException {
         for (ClientHandler client : clients) {
-            client.sendMessage(message);
+            client.sendMessage(command);
         }
     }
 
-    public synchronized void subscribe(ClientHandler clientHandler) {
+    public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
         clients.add(clientHandler);
+        List<String> users = getAllUsernames();
+        broadcastMessage(Command.updateUsersListCommand(users));
     }
 
-    public synchronized void unsubscribe(ClientHandler clientHandler) {
+    public synchronized void unsubscribe(ClientHandler clientHandler) throws IOException {
         clients.remove(clientHandler);
+        List<String> users = getAllUsernames();
+        broadcastMessage(Command.updateUsersListCommand(users));
     }
 
-    public synchronized void targetMessage(String nicknameFrom, String nicknameTo, String message) throws IOException {
+    private List<String> getAllUsernames() {
+        List<String> result = new ArrayList<>();
         for (ClientHandler client : clients) {
-            if (client.getNickname().equals(nicknameTo)) {
-                client.sendTargetMessage(nicknameFrom, message);
+            result.add(client.getNickname());
+        }
+        return result;
+    }
+
+    public synchronized void sendPrivateMessage(String receiver, Command command) throws IOException {
+        for (ClientHandler client : clients) {
+            if (client.getNickname().equals(receiver)) {
+                client.sendMessage(command);
                 return;
             }
         }

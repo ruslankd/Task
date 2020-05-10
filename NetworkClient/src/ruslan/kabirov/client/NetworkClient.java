@@ -1,3 +1,5 @@
+package ruslan.kabirov.client;
+
 import ruslan.kabirov.client.controller.ClientController;
 
 import java.io.IOException;

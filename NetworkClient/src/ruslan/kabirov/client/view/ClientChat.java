@@ -5,6 +5,7 @@ import ruslan.kabirov.client.controller.ClientController;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 public class ClientChat extends JFrame {
 
@@ -44,7 +45,14 @@ public class ClientChat extends JFrame {
         }
 
         appendOwnMessage(message);
-        controller.sendMessage(message);
+
+        if (usersList.getSelectedIndex() < 1) {
+            controller.sendMessage(message);
+        } else {
+            String username = usersList.getSelectedValue();
+            controller.sendPrivateMessage(username, message);
+        }
+
         messageTextField.setText(null);
     }
 
@@ -61,4 +69,15 @@ public class ClientChat extends JFrame {
     }
 
 
+    public void showError(String errorMessage) {
+        JOptionPane.showMessageDialog(this, errorMessage);
+    }
+
+    public void updateUsers(List<String> users) {
+        SwingUtilities.invokeLater(() -> {
+            DefaultListModel<String> model = new DefaultListModel<>();
+            model.addAll(users);
+            usersList.setModel(model);
+        });
+    }
 }
