@@ -4,6 +4,7 @@ import ruslan.kabirov.Command;
 import ruslan.kabirov.client.model.NetworkService;
 import ruslan.kabirov.client.view.AuthDialog;
 import ruslan.kabirov.client.view.ClientChat;
+import ruslan.kabirov.client.view.NicknameChange;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -15,12 +16,14 @@ public class ClientController {
     private final NetworkService networkService;
     private final AuthDialog authDialog;
     private final ClientChat clientChat;
+    private final NicknameChange nicknameChangeDialog;
     private String nickname;
 
     public ClientController(String serverHost, int serverPort) {
         this.networkService = new NetworkService(serverHost, serverPort, this);
         this.authDialog = new AuthDialog(this);
         this.clientChat = new ClientChat(this);
+        this.nicknameChangeDialog = new NicknameChange(this);
     }
 
     public void runApplication() throws IOException {
@@ -103,5 +106,16 @@ public class ClientController {
         users.remove(nickname);
         users.add(0, ALL_USERS_LIST_ITEM);
         clientChat.updateUsers(users);
+    }
+
+    public void openChangeNicknameDialog() {
+        nicknameChangeDialog.setVisible(true);
+    }
+
+    public void changeNickname(String newNickname) {
+        networkService.changeNickname(newNickname);
+        SwingUtilities.invokeLater(() -> clientChat.setTitle(newNickname));
+        this.nickname = newNickname;
+        nicknameChangeDialog.dispose();
     }
 }

@@ -9,6 +9,7 @@ import ruslan.kabirov.server.networkserver.clienthandler.ClientHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +45,15 @@ public class MyServer {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } finally {
-            authService.stop();
+            try {
+                authService.stop();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
@@ -82,6 +87,7 @@ public class MyServer {
         List<String> users = getAllUsernames();
         broadcastMessage(Command.updateUsersListCommand(users));
     }
+
 
     private List<String> getAllUsernames() {
         List<String> result = new ArrayList<>();

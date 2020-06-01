@@ -14,8 +14,9 @@ public class ClientChat extends JFrame {
     private JTextField messageTextField;
     private JButton sendButton;
     private JTextArea chatText;
+    private JButton changeNicknameButton;
 
-    private ClientController controller;
+    private final ClientController controller;
 
     public ClientChat(ClientController controller) {
         this.controller = controller;
@@ -34,8 +35,13 @@ public class ClientChat extends JFrame {
 
 
     private void addListeners() {
+        changeNicknameButton.addActionListener(e -> ClientChat.this.changeNickname());
         sendButton.addActionListener(e -> ClientChat.this.sendMessage());
         messageTextField.addActionListener(e -> sendMessage());
+    }
+
+    private void changeNickname() {
+        controller.openChangeNicknameDialog();
     }
 
     private void sendMessage() {

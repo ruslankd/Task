@@ -3,14 +3,14 @@ package ruslan.kabirov.server.networkserver.clienthandler;
 import ruslan.kabirov.Command;
 import ruslan.kabirov.command.AuthCommand;
 import ruslan.kabirov.command.BroadcastMessageCommand;
+import ruslan.kabirov.command.ChangeNicknameCommand;
 import ruslan.kabirov.command.PrivateMessageCommand;
 import ruslan.kabirov.server.networkserver.MyServer;
 import ruslan.kabirov.server.networkserver.auth.AuthService;
 
 import java.io.*;
 import java.net.Socket;
-
-import static ruslan.kabirov.server.networkserver.MessageConstant.*;
+import java.sql.SQLException;
 
 public class ClientHandler {
 
@@ -38,7 +38,7 @@ public class ClientHandler {
             try {
                 authentication();
                 readMessages();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.out.println("Connection has been failed");
             } finally {
                 closeConnection();
@@ -55,7 +55,7 @@ public class ClientHandler {
         }
     }
 
-    private void readMessages() throws IOException {
+    private void readMessages() throws IOException, SQLException {
         while (true) {
             Command command = readCommand();
             if (command == null) {
@@ -74,6 +74,16 @@ public class ClientHandler {
                     String message = privateMessageCommand.getMessage();
                     serverInstance.sendPrivateMessage(receiver, Command.messageCommand(nickname, message));
                     break;
+                case CHANGE_NICKNAME:
+                    ChangeNicknameCommand changeNicknameCommand = (ChangeNicknameCommand) command.getData();
+                    String newNickname = changeNicknameCommand.getNewNickname();
+                    authService.changeNickname(nickname, newNickname);
+                    serverInstance.broadcastMessage(Command.messageCommand(nickname, "changed the nickname to \"" +
+                            newNickname + "\""));
+                    serverInstance.unsubscribe(this);
+                    this.nickname = newNickname;
+                    serverInstance.subscribe(this);
+                    break;
                 default:
                     String errorMessage = "Unknown type of command: " + command.getType();
                     System.err.println(errorMessage);
@@ -82,7 +92,7 @@ public class ClientHandler {
         }
     }
 
-    private void authentication() throws IOException {
+    private void authentication() throws IOException, SQLException {
 
         Thread t = new Thread(this::trackTimeout);
         t.start();
@@ -117,10 +127,11 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            System.out.println();
         }
     }
 
-    private boolean processAuthCommand(Command command) throws IOException {
+    private boolean processAuthCommand(Command command) throws IOException, SQLException {
         AuthCommand authCommand = (AuthCommand) command.getData();
         String login = authCommand.getLogin();
         String password = authCommand.getPassword();

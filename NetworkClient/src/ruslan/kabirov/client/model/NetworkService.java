@@ -126,4 +126,12 @@ public class NetworkService {
             e.printStackTrace();
         }
     }
+
+    public void changeNickname(String newNickname) {
+        try {
+            sendCommand(Command.changeNicknameCommand(newNickname));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
