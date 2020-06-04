@@ -18,12 +18,14 @@ public class ClientController {
     private final ClientChat clientChat;
     private final NicknameChange nicknameChangeDialog;
     private String nickname;
+    private ClientChatHistory messageHistory;
 
     public ClientController(String serverHost, int serverPort) {
         this.networkService = new NetworkService(serverHost, serverPort, this);
         this.authDialog = new AuthDialog(this);
         this.clientChat = new ClientChat(this);
         this.nicknameChangeDialog = new NicknameChange(this);
+
     }
 
     public void runApplication() throws IOException {
@@ -35,9 +37,16 @@ public class ClientController {
         networkService.setSuccessfulAuthEvent(nickname -> {
             ClientController.this.setUserName(nickname);
             ClientController.this.openChat();
+            loadChatHistory();
         });
         authDialog.setVisible(true);
 
+    }
+
+    private void loadChatHistory() {
+        this.messageHistory = new ClientChatHistory(nickname);
+        if (messageHistory.size() != 0)
+            clientChat.setChatHistory(messageHistory.getLast100messages());
     }
 
     private void openChat() {
@@ -117,5 +126,9 @@ public class ClientController {
         SwingUtilities.invokeLater(() -> clientChat.setTitle(newNickname));
         this.nickname = newNickname;
         nicknameChangeDialog.dispose();
+    }
+
+    public void addMessageToHistory(String message) {
+        messageHistory.addMessage(message);
     }
 }
