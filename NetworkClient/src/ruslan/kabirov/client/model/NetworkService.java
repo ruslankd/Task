@@ -97,6 +97,7 @@ public class NetworkService {
                 message = username + ": " + message;
             }
             messageHandler.accept(message);
+            controller.addMessageToHistory(message);
         }
     }
 

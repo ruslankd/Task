@@ -36,7 +36,7 @@ public class ClientChat extends JFrame {
 
     private void addListeners() {
         changeNicknameButton.addActionListener(e -> ClientChat.this.changeNickname());
-        sendButton.addActionListener(e -> ClientChat.this.sendMessage());
+        sendButton.addActionListener(e -> sendMessage());
         messageTextField.addActionListener(e -> sendMessage());
     }
 
@@ -50,7 +50,7 @@ public class ClientChat extends JFrame {
             return;
         }
 
-        appendOwnMessage(message);
+        //appendOwnMessage(message);
 
         if (usersList.getSelectedIndex() < 1) {
             controller.sendMessage(message);
@@ -84,6 +84,14 @@ public class ClientChat extends JFrame {
             DefaultListModel<String> model = new DefaultListModel<>();
             model.addAll(users);
             usersList.setModel(model);
+        });
+    }
+
+    public void setChatHistory(List<String> chatHistory) {
+        SwingUtilities.invokeLater(() -> {
+            for (String s : chatHistory) {
+                chatText.append(s + System.lineSeparator());
+            }
         });
     }
 }
