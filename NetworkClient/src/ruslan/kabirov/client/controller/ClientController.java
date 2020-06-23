@@ -43,7 +43,7 @@ public class ClientController {
     }
 
     public void registerUser() {
-
+        // TODO
     }
 
     private void openChat() {
