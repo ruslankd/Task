@@ -1,6 +1,7 @@
 package ruslan.kabirov.server.networkserver;
 
 
+import org.apache.log4j.Logger;
 import ruslan.kabirov.Command;
 import ruslan.kabirov.server.networkserver.auth.AuthService;
 import ruslan.kabirov.server.networkserver.auth.BaseAuthService;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyServer {
+
+    private final static Logger logger = Logger.getLogger(MyServer.class);
 
     private final int port;
     private final List<ClientHandler> clients;
@@ -35,12 +38,12 @@ public class MyServer {
             while (true) {
                 System.out.println("Waiting for client connection...");
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client has been connected");
+                logger.info("Client has been connected");
                 ClientHandler handler = new ClientHandler(clientSocket, this);
                 try {
                     handler.handle();
                 } catch (IOException e) {
-                    System.err.println("Failed to handle client connection!");
+                    logger.error("Failed to handle client connection!");
                     clientSocket.close();
                 }
             }
