@@ -18,7 +18,6 @@ public class ClientController {
     private final AuthDialog authDialog;
     private final ClientChat clientChat;
     private final NicknameChange nicknameChangeDialog;
-    private final RegisterDialog registerDialog;
     private String nickname;
 
     public ClientController(String serverHost, int serverPort) {
@@ -26,7 +25,6 @@ public class ClientController {
         this.authDialog = new AuthDialog(this);
         this.clientChat = new ClientChat(this);
         this.nicknameChangeDialog = new NicknameChange(this);
-        this.registerDialog = new RegisterDialog(this);
     }
 
     public void runApplication() throws IOException {
