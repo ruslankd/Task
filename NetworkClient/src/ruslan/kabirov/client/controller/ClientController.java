@@ -5,6 +5,7 @@ import ruslan.kabirov.client.model.NetworkService;
 import ruslan.kabirov.client.view.AuthDialog;
 import ruslan.kabirov.client.view.ClientChat;
 import ruslan.kabirov.client.view.NicknameChange;
+import ruslan.kabirov.client.view.RegisterDialog;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -40,7 +41,6 @@ public class ClientController {
             loadChatHistory();
         });
         authDialog.setVisible(true);
-
     }
 
     private void loadChatHistory() {

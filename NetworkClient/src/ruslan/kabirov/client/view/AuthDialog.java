@@ -3,6 +3,8 @@ package ruslan.kabirov.client.view;
 import ruslan.kabirov.client.controller.ClientController;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -13,6 +15,7 @@ public class AuthDialog extends JFrame {
     private JButton buttonCancel;
     private JTextField loginText;
     private JPasswordField passwordText;
+    private JLabel labelSignUp;
 
     private ClientController controller;
 
@@ -24,8 +27,13 @@ public class AuthDialog extends JFrame {
         setLocationRelativeTo(null);
 
         buttonOK.addActionListener(e -> onOK());
-
         buttonCancel.addActionListener(e -> onCancel());
+        labelSignUp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                onSignUp();
+            }
+        });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -47,6 +55,10 @@ public class AuthDialog extends JFrame {
 
     private void onCancel() {
         System.exit(0);
+    }
+
+    private void onSignUp() {
+        controller.registerUser();
     }
 
     public void showError(String errorMessage) {
