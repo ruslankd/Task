@@ -1,5 +1,6 @@
 package ruslan.kabirov.server.networkserver.clienthandler;
 
+import org.apache.log4j.Logger;
 import ruslan.kabirov.Command;
 import ruslan.kabirov.command.AuthCommand;
 import ruslan.kabirov.command.BroadcastMessageCommand;
@@ -13,6 +14,8 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 public class ClientHandler {
+
+    private static final Logger logger = Logger.getLogger(MyServer.class);
 
     private static final int TIME_FOR_AUTHORIZATION = 120000;
     private final MyServer serverInstance;
@@ -39,7 +42,7 @@ public class ClientHandler {
                 authentication();
                 readMessages();
             } catch (Exception e) {
-                System.out.println("Connection has been failed");
+                logger.error("Connection has been failed");
             } finally {
                 closeConnection();
             }
@@ -58,6 +61,7 @@ public class ClientHandler {
     private void readMessages() throws IOException, SQLException {
         while (true) {
             Command command = readCommand();
+            logger.info("Received command from " + nickname);
             if (command == null) {
                 continue;
             }
@@ -86,7 +90,7 @@ public class ClientHandler {
                     break;
                 default:
                     String errorMessage = "Unknown type of command: " + command.getType();
-                    System.err.println(errorMessage);
+                    logger.warn(errorMessage);
                     sendMessage(Command.errorCommand(errorMessage));
             }
         }
@@ -112,7 +116,7 @@ public class ClientHandler {
                     break;
                 default:
                     String errorMessage = "Illegal command for authentication: " + command.getType();
-                    System.err.println(errorMessage);
+                    logger.warn(errorMessage);
                     sendMessage(Command.errorCommand(errorMessage));
             }
         }
@@ -123,7 +127,7 @@ public class ClientHandler {
             Thread.sleep(TIME_FOR_AUTHORIZATION);
             String errorMessage = "Authorization timed out";
             sendMessage(Command.authErrorCommand(errorMessage));
-            System.err.println(errorMessage);
+            logger.warn(errorMessage);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -156,7 +160,7 @@ public class ClientHandler {
             return (Command) inputStream.readObject();
         } catch (ClassNotFoundException e) {
             String errorMessage = "Unknown type of object from client!";
-            System.err.println(errorMessage);
+            logger.warn(errorMessage);
             e.printStackTrace();
             sendMessage(Command.errorCommand(errorMessage));
             return null;
