@@ -42,10 +42,6 @@ public class ClientController {
         authDialog.setVisible(true);
     }
 
-    public void registerUser() {
-
-    }
-
     private void openChat() {
         authDialog.dispose();
         networkService.setMessageHandler(clientChat::appendMessage);
